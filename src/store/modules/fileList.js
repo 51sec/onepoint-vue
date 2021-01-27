@@ -2,6 +2,7 @@ import Vue from 'vue'
 
 const state = {
     cache: {},
+    idCache:{},
     menuData: {
         row: null,
         srcRow: null,

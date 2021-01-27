@@ -7,7 +7,7 @@
 
       <template v-if="listData.file">
         <li v-if="menuData.row.type === 0" tabindex="-1" class="el-dropdown-menu__item"
-            @click="preview($store.getters.baseURL + path + '?preview')"><i class="el-icon-view"></i>预览
+            @click="preview($store.getters.baseURL + path + '?preview'+appendID(path))"><i class="el-icon-view"></i>预览
         </li>
         <li tabindex="-1" class="el-dropdown-menu__item" @click="handleClipboard($store.getters.baseURL + path,$event)">
           <i class="el-icon-share"></i>分享
@@ -25,7 +25,7 @@
       </template>
       <template v-else>
         <li v-if="menuData.row.type === 0" tabindex="-1" class="el-dropdown-menu__item"
-            @click="preview($store.getters.baseURL + path +menuData.row.name+ '?preview')"><i class="el-icon-view"></i>预览
+            @click="preview($store.getters.baseURL + path +menuData.row.name+ '?preview'+appendID(path+menuData.row.name))"><i class="el-icon-view"></i>预览
         </li>
         <li v-else tabindex="-1" class="el-dropdown-menu__item"
             @click="$router.push({name: 'FileList', params: {pathMatch: path+ menuData.row.name+'/'}})"><i
@@ -178,6 +178,13 @@ export default {
     },
     preview(url) {
       window.open(url, '_blank')
+    },
+    //@todo 临时方案
+    appendID(path){
+      if(path.endsWith('/'))path=path.slice(0,-1);
+      const id = this.$store.state.fileList.idCache[path];
+      if(id)return '&id='+id;
+      return '';
     }
   },
   computed: {

@@ -1,14 +1,8 @@
 <template>
-  <div>
+  <div class="mt-5 pr-3">
     <el-form :model="form" status-icon :rules="rules" ref="form" label-width="100px">
-      <el-form-item label="旧用户名" prop="user0">
-        <el-input v-model="form.user0" autocomplete="off"></el-input>
-      </el-form-item>
       <el-form-item label="旧密码" prop="pass0">
         <el-input type="password" v-model="form.pass0" autocomplete="off"></el-input>
-      </el-form-item>
-      <el-form-item label="新用户名" prop="user">
-        <el-input v-model="form.user" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="新密码" prop="pass">
         <el-input type="password" v-model="form.pass" autocomplete="off"></el-input>
@@ -89,11 +83,14 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          configAPI.setSysPass(this.form).then(()=>{this.$message({
-            message: 'Update pass successfully',
-            type: 'success',
-            duration: 1500
-          })});
+          configAPI.setSysPass({password: this.form.pass, password0: this.form.pass0}).then(() => {
+            this.$message({
+              message: 'Update pass successfully',
+              type: 'success',
+              duration: 1500
+            })
+            this.resetForm(formName);
+          });
         } else {
           return false;
         }

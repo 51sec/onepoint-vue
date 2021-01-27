@@ -9,6 +9,8 @@ Router.prototype.push = function push(location, onResolve, onReject) {
 
 Vue.use(Router)
 
+import ConfigParams from '@/views/config-params/index'
+
 /**
  * constantRoutes
  * a base page that does not have permission requirements
@@ -39,17 +41,34 @@ export const constantRoutes = [
             {
                 path: 'drive-add',
                 name: 'DriveAdd',
-                component: () => import('@/views/drive-add/index'),
+                component: ConfigParams,
+                meta:{
+                    type:'add'
+                }
             },
             {
                 path: 'drive-edit',
                 name: 'DriveEdit',
-                component: () => import('@/views/drive-edit/index'),
+                component: ConfigParams,
+                meta:{
+                    type:'edit'
+                }
+            },
+            {
+                path: 'drive-config',
+                name: 'DriveConfig',
+                component: ConfigParams,
+                meta:{
+                    type:'config'
+                }
             },
             {
                 path: 'setting',
                 name: 'SysSetting',
-                component: () => import('@/views/setting/index'),
+                component: ConfigParams,
+                meta:{
+                    type: 'base'
+                }
             },
             {
                 path: 'pass-setting',

@@ -3,7 +3,7 @@
     <el-row>
       <el-col :span="20" :offset="2">
         <div style="padding: 15px 0;position: relative;border-bottom: solid 1px #e6e6e6;">
-          <a target="_blank" href="">
+          <a target="_blank" href="https://github.com/ukuq/onepoint">
             <img :src="favicon" alt="logo" style="width: 32px;height: 32px">
           </a>
           <el-menu :class="menuClass" :mode="menuMode" :router="true">
@@ -18,10 +18,10 @@
               <el-menu-item index="/setting">基本设置</el-menu-item>
               <el-menu-item index="/pass-setting">密码设置</el-menu-item>
             </el-submenu>
-            <el-menu-item index="/redirect/http://github.com/ukuq/onepoint">交流反馈</el-menu-item>
+            <el-menu-item index="/dashboard">运行状态</el-menu-item>
           </el-menu>
           <el-dropdown class="avatar-container right-menu-item hover-effect" style="float: right">
-            <svg-icon icon-class="account-circle" style="width: 28px;height: 28px;"></svg-icon>
+            <span><svg-icon icon-class="account-circle" style="width: 28px;height: 28px;"></svg-icon></span>
             <el-dropdown-menu slot="dropdown">
               <router-link to="/">
                 <el-dropdown-item>Home</el-dropdown-item>
@@ -32,6 +32,9 @@
               <a target="_blank" href="http://github.com/ukuq/onepoint-vue">
                 <el-dropdown-item>Github</el-dropdown-item>
               </a>
+              <el-dropdown-item>
+                <span>v210127</span>
+              </el-dropdown-item>
               <el-dropdown-item divided @click.native="logout">
                 <span style="display:block;">Log Out</span>
               </el-dropdown-item>
