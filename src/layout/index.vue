@@ -68,8 +68,8 @@ export default {
       if (this.menuMode) return "d-md-block d-none op-m-menu-h";
       return this.menuShow ? "op-m-menu-v" : "op-m-menu-v d-none";
     },
-    favicon(){
-      return this.$store.state.system.baseURL+'/favicon.ico'
+    favicon() {
+      return this.$store.state.system.baseURL + '/favicon.ico'
     }
   },
   methods: {
@@ -78,7 +78,7 @@ export default {
       this.menuShow = !this.menuShow;
     },
     async logout() {
-      await this.$store.dispatch('system/logout')
+      this.$store.commit('system/SET_STATE', {token: ''})
       return this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     }
   }

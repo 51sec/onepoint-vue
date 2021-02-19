@@ -81,19 +81,21 @@
 
 <script>
 
+import {login} from "@/api/user";
+
 export default {
   name: 'Login',
   created() {
     const s = new URL(window.location).searchParams;
-    if(s.get('base_url')){
-      if(s.get('base_url'))this.loginForm.baseURL=s.get('base_url');
-      if(s.get('path_api'))this.loginForm.baseURL=s.get('path_api');
-      if(s.get('path_admin'))this.loginForm.baseURL=s.get('path_admin');
+    if (s.get('base_url')) {
+      if (s.get('base_url')) this.loginForm.baseURL = s.get('base_url');
+      if (s.get('path_api')) this.loginForm.baseURL = s.get('path_api');
+      if (s.get('path_admin')) this.loginForm.baseURL = s.get('path_admin');
     }
-    if(window.opConfig){
-      this.loginForm.baseURL=window.opConfig.baseURL;
-      this.loginForm.PATH_API=window.opConfig.PATH_API;
-      this.loginForm.PATH_ADMIN=window.opConfig.PATH_ADMIN;
+    if (window.opConfig) {
+      this.loginForm.baseURL = window.opConfig.baseURL;
+      this.loginForm.PATH_API = window.opConfig.PATH_API;
+      this.loginForm.PATH_ADMIN = window.opConfig.PATH_ADMIN;
     }
   },
   data() {
@@ -155,14 +157,15 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('system/login', this.loginForm)
-              .then(() => {
-                this.$router.push({path: this.$route.query.redirect || '/'})
-                this.loading = false
-              })
-              .catch(() => {
-                this.loading = false
-              })
+          const {username, password, baseURL, PATH_API, PATH_ADMIN} = this.loginForm;
+          this.$store.commit('system/SET_BASE', {baseURL, PATH_API, PATH_ADMIN});
+          login({username: username.trim(), password: password.trim()}).then(data => {
+            this.$store.commit('system/SET_STATE', data);
+            this.$router.push({path: this.$route.query.redirect || '/'})
+            this.loading = false
+          }).catch(() => {
+            this.loading = false
+          })
         } else {
           return false
         }

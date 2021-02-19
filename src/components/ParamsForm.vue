@@ -17,40 +17,48 @@
     </el-card>
     <el-card class="box-card" shadow="hover">
       <h3>result</h3>
-      <pre style="overflow-x: auto;"><code>{{JSON.stringify(config,null,2) }}</code></pre>
+      <pre style="overflow-x: auto;"><code>{{ JSON.stringify(config, null, 2) }}</code></pre>
     </el-card>
   </div>
 </template>
 <script>
 import ArrayFrom from "@/components/ArrayFrom";
+
 export default {
-  name:'ParamsForm',
+  name: 'ParamsForm',
   components: {ArrayFrom},
-  props:{
-    params:Array
-  },
-  created() {
-    this.params.sort((a, b) => b.level-a.level);
+  props: {
+    params: Array
   },
   data() {
     return {};
   },
-  computed:{
-    config(){
-      return this.params.reduce((last,e)=>{last[e.name]=e.value;return last;},{});
+  watch: {
+    params: function (v) {
+      Array.prototype.sort.call(v, (a, b) => b.level - a.level)
+    }
+  },
+  computed: {
+    config() {
+      return this.params.reduce((last, e) => {
+        last[e.name] = e.value;
+        return last;
+      }, {});
     }
   }
 }
 </script>
 <style scoped>
-.box-card{
+.box-card {
   margin-top: 10px;
 }
+
 h3:before {
   content: "#";
   color: #f56c6c;
   margin-right: 4px;
 }
+
 .form-star:after {
   content: "*";
   color: #f56c6c;

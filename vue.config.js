@@ -23,7 +23,7 @@ module.exports = {
      * In most cases please use '/' !!!
      * Detail: https://cli.vuejs.org/config/#publicpathv
      */
-//    publicPath: 'https://cdn.jsdelivr.net/gh/ukuq/onepoint-vue@v210127/dist/',
+    publicPath: process.env.NODE_ENV === 'development'?'':`https://cdn.jsdelivr.net/gh/ukuq/onepoint-vue@v${new Date().toISOString().slice(2,10).replace(/-/g,'')}/dist/`,
     outputDir: 'dist',
     assetsDir: 'static',
     lintOnSave: process.env.NODE_ENV === 'development',

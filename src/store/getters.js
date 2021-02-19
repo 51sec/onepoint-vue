@@ -23,6 +23,8 @@ const getters = {
     },
     baseURL:state=>{
         return state.system.baseURL;
-    }
+    },
+    token:state=>state.system.token,
+    flag:state=>state.system.flag
 }
 export default getters

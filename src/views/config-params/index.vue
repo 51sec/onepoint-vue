@@ -1,6 +1,7 @@
 <template>
   <div>
     <h2>{{ config.title }}</h2>
+    <p v-html="config.desc"></p>
     <params-form ref="form" :params="params"></params-form>
     <div class="my-3">
       <el-button type="primary" @click="config.submit()">确 认</el-button>
@@ -21,7 +22,8 @@ export default {
     return {
       select: {
         'config': {
-          title: 'drive-config',
+          title: '配置云盘',
+          desc:'这里是云盘使用的模块独有的配置信息，通常你需要完成这里的配置后才能正常访问云盘',
           created: () => {
             configAPI.getDriveConfig(this.path).then(data => {
               const {config, params} = data;
@@ -43,7 +45,8 @@ export default {
           }
         },
         'add': {
-          title: 'drive-add',
+          title: '添加云盘',
+          desc:'在这里，可以添加一个新的云盘',
           created: () => {
             configAPI.getDrive().then(data => {
               this.params = data.params;
@@ -56,12 +59,13 @@ export default {
                 type: 'success',
                 duration: 1500
               })
-              this.$router.push({name: 'DriveConfig', query: this.$route.meta.path});
+              this.$router.push({name: 'DriveConfig', query: {path: this.$refs.form.config.path}});
             });
           }
         },
         'edit': {
-          title: 'drive-edit',
+          title: '编辑云盘',
+          desc:'这里是云盘共有的配置项，你可以在这里配置云盘的基本信息，包括但不限于云盘使用的模块、访问密码、readme等等',
           created: () => {
             configAPI.getDrive(this.path).then(({drive, params}) => {
               params.forEach(e => {
@@ -83,7 +87,8 @@ export default {
           }
         },
         'base': {
-          title: "base-setting",
+          title: "基本设置",
+          desc:'这里是系统的基本配置项，你必须在完成第一次配置后才能离开这里',
           created: () => {
             configAPI.getSysConfig().then(data => {
               const {config, params} = data;
@@ -101,6 +106,7 @@ export default {
                 duration: 1500
               })
               this.$router.push({name: 'Dashboard'})
+              this.$store.commit('system/SET_FLAG', 'ok')
             });
           }
         },

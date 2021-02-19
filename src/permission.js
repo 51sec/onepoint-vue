@@ -1,26 +1,29 @@
+import store from './store'
 import router from './router'
 import NProgress from 'nprogress' // progress bar
 import 'nprogress/nprogress.css' // progress bar style
-import { getToken } from '@/utils/auth' // get token from cookie
 
-NProgress.configure({ showSpinner: false }) // NProgress Configuration
+NProgress.configure({showSpinner: false}) // NProgress Configuration
 
 const whiteList = ['/login', '/auth-redirect'] // no redirect whitelist
 
-router.beforeEach(async(to, from, next) => {
+router.beforeEach(async (to, from, next) => {
     // start progress bar
     NProgress.start()
 
     // set page title
-    document.title = 'onepoint-vue '+to.name
+    document.title = 'onepoint-vue ' + to.name
 
     // determine whether the user has logged in
-    const hasToken = getToken()
+    const hasToken = store.getters.token
 
     if (hasToken) {
-        if (to.path === '/login') {
+        if (to.name !== 'SysSetting' && store.getters.flag === 'NoConfiguration') {
+            next({name: 'SysSetting'});
+            NProgress.done()
+        } else if (to.path === '/login') {
             // if is logged in, redirect to the home page
-            next({ path: '/' })
+            next({path: '/'})
             NProgress.done() // hack: https://github.com/PanJiaChen/vue-element-admin/pull/2939
         } else {
             next()
