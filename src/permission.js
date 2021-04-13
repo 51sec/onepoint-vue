@@ -1,7 +1,7 @@
 import store from './store'
 import router from './router'
 import NProgress from 'nprogress' // progress bar
-import 'nprogress/nprogress.css' // progress bar style
+import 'nprogress/nprogress.css'
 
 NProgress.configure({showSpinner: false}) // NProgress Configuration
 
@@ -12,14 +12,15 @@ router.beforeEach(async (to, from, next) => {
     NProgress.start()
 
     // set page title
-    document.title = 'onepoint-vue ' + to.name
+    document.title = (store.getters.publicData.site || {}).name + ' ' + to.name
 
     // determine whether the user has logged in
     const hasToken = store.getters.token
 
     if (hasToken) {
-        if (to.name !== 'SysSetting' && store.getters.flag === 'NoConfiguration') {
-            next({name: 'SysSetting'});
+        console.log(to)
+        if (to.name !== 'BasicSetting' && store.getters.version === 1) {
+            next({name: 'BasicSetting'})
             NProgress.done()
         } else if (to.path === '/login') {
             // if is logged in, redirect to the home page

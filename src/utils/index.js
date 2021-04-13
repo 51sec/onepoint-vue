@@ -189,6 +189,12 @@ export function html2Text(val) {
   return div.textContent || div.innerText
 }
 
+export function text2Html(val){
+  const div = document.createElement ("div");
+  (div.textContent !== undefined ) ? (div.textContent = val) : (div.innerText = val);
+  return div.innerHTML
+}
+
 /**
  * Merges two objects, giving the last one precedence
  * @param {Object} target

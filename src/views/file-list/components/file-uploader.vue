@@ -4,6 +4,7 @@
         title="上传状态"
         :visible.sync="uploadData.visible"
         width="80%">
+      <el-button @click="upload" size="small" type="primary">上传文件</el-button>
       <el-table
           class="op-u-table"
           :data="uploadData.queue"
@@ -12,16 +13,19 @@
             prop="state"
             label="state">
           <div slot-scope="scope">
-            {{getState(scope.row.state)}}
-            <i v-show="scope.row.state !== 1" class="el-icon-delete" style="cursor: pointer" @click="remove(scope.row)"></i>
-            <i v-show="scope.row.state === 1" class="el-icon-video-pause" style="cursor: pointer" @click="stop(scope.row)"></i>
-            <i v-show="scope.row.state < 0" class="el-icon-refresh-right" style="cursor: pointer" @click="retry(scope.row)"></i>
+            {{ getState(scope.row.state) }}
+            <i v-show="scope.row.state !== 1" class="el-icon-delete" style="cursor: pointer"
+               @click="remove(scope.row)"></i>
+            <i v-show="scope.row.state === 1" class="el-icon-video-pause" style="cursor: pointer"
+               @click="stop(scope.row)"></i>
+            <i v-show="scope.row.state < 0" class="el-icon-refresh-right" style="cursor: pointer"
+               @click="retry(scope.row)"></i>
           </div>
         </el-table-column>
         <el-table-column
             prop="name"
             label="name">
-          <div slot-scope="scope">{{scope.row.file.name}}</div>
+          <div slot-scope="scope">{{ scope.row.file.name }}</div>
         </el-table-column>
         <el-table-column
             prop="path"
@@ -57,19 +61,19 @@
 </template>
 <script>
 import axios from "axios";
-import fileAPI from "@/api/file-cmd";
-import {formatDate,formatSize} from '@/utils/formatter'
+import {formatDate, formatSize} from '@/utils/formatter'
+
 export default {
   data() {
     return {
-      path:'',
-      uploadData:this.$store.getters.fileListUpload
+      path: '',
+      uploadData: this.$store.getters.fileListUpload
     }
   },
   methods: {
     fUpload() {
       const now = this.uploadData.now;
-      fileAPI.upload(now.path, now.file.name).then(data => {
+      this.$op.upload(now.path, now.file.name).then(data => {
         this.fileUpload(data, data.uploadUrl);
       }).catch(() => {
         now.state = -1;
@@ -79,8 +83,8 @@ export default {
     uploadNext() {
       if (this.uploadData.now && this.uploadData.now.state === 1) return;
       this.uploadData.now = this.uploadData.queue.find((e) => e.state === 0);
-      if(this.uploadData.now){
-        this.uploadData.now.state=1;
+      if (this.uploadData.now) {
+        this.uploadData.now.state = 1;
         this.fUpload();
       }
     },
@@ -103,7 +107,7 @@ export default {
       let offset, offset1;
       const _this = this;
       const uploadNow = this.uploadData.now;
-      if(!uploadNow || uploadNow.state!==1){
+      if (!uploadNow || uploadNow.state !== 1) {
         this.uploadNext();
         return;
       }
@@ -124,17 +128,17 @@ export default {
           },
           onUploadProgress: progressEvent => {
             uploadNow.offset = offset + progressEvent.loaded;
-            if(uploadNow.state!==1)source.cancel();
+            if (uploadNow.state !== 1) source.cancel();
           },
           withCredentials: false,
-          cancelToken:source.token
+          cancelToken: source.token
         })
             .then(r => {
               console.log(r.data);
               console.log("success: [" + offset + "," + offset1 + ")");
-              uploadNow.offset=offset1;
+              uploadNow.offset = offset1;
               if (r.status === 201) {
-                _this.$store.commit('fileList/CACHE_APPEND', uploadNow.path, {
+                ((_this.$store.getters.fileListCache[uploadNow.path] || {}).list || []).unshift({
                   type: 0,
                   name: file.name,
                   size: file.size,
@@ -152,44 +156,44 @@ export default {
             .catch(err => {
               console.log(err);
               _this.$notify.error(String(err.message));
-              if(uploadNow)uploadNow.state = -1;
+              if (uploadNow) uploadNow.state = -1;
               _this.uploadNext();
             });
       };
     },
-    upload(){
-      this.path=this.$store.getters.path;
+    upload() {
+      this.path = this.$store.getters.path;
       this.$refs['upload-files'].click();
     },
-    getState(state){
+    getState(state) {
 
-      if(state===-2)return '已取消';
-      if(state===-1)return '错误';
-      if(state===0)return '等待';
-      if(state===1)return '上传中';
-      if(state===2)return '完成';
+      if (state === -2) return '已取消';
+      if (state === -1) return '错误';
+      if (state === 0) return '等待';
+      if (state === 1) return '上传中';
+      if (state === 2) return '完成';
       return '未知';
     },
-    formatDate(row){
+    formatDate(row) {
       return formatDate(row.time)
     },
-    formatSize(row){
+    formatSize(row) {
       return formatSize(row.offset)
     },
-    remove(row){
+    remove(row) {
       const i = this.uploadData.queue.indexOf(row);
-      if(i>=0)this.uploadData.queue.splice(i,1);
+      if (i >= 0) this.uploadData.queue.splice(i, 1);
     },
-    stop(row){
-      row.state=-2
+    stop(row) {
+      row.state = -2
       this.uploadNext();
     },
-    retry(row){
-      row.state=0;
+    retry(row) {
+      row.state = 0;
       this.uploadNext();
     },
-    progress(row){
-      return Number(row.offset/row.file.size*100).toFixed(0)+'%';
+    progress(row) {
+      return Number(row.offset / row.file.size * 100).toFixed(0) + '%';
     }
   }
 }

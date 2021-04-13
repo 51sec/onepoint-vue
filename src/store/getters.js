@@ -1,30 +1,49 @@
 import Vue from 'vue';
+
 const getters = {
-    fileListCache: state =>{
+    fileListCache: state => {
         return state.fileList.cache;
     },
-    fileListMenu:state=>{
-        return state.fileList.menuData;
-    },
-    fileListUpload:state=>{
+    fileListUpload: state => {
         return state.fileList.upload;
     },
-    fileListTouch:state=>{
-        return state.fileList.touch;
+    touchData: state => {
+        return state.fileList.touchData;
     },
-    path:state=>{
+
+    mode: state => {
+        return state.system.mode
+    },
+    publicData:state =>{
+        return state.system.publicData
+    },
+
+    previewData: state => {
+        return state.fileList.previewData;
+    },
+
+    path: state => {
         return state.fileList.path;
     },
-    listData:state=>{
-        const p = state.fileList.path;
-        const c = state.fileList.cache;
-        if(c[p]===undefined)Vue.set(c,p,{});
-        return c[p];
+
+    pathPrefix: state => {
+        return state.system.baseURL + state.fileList.path;
     },
-    baseURL:state=>{
+    baseURL: state => {
         return state.system.baseURL;
     },
-    token:state=>state.system.token,
-    flag:state=>state.system.flag
+    baseAPIURL: state => {
+        return state.system.baseURL + state.system.PATH_API;
+    },
+
+    listData: state => {
+        const p = state.fileList.path;
+        const c = state.fileList.cache;
+        if (c[p] === undefined) Vue.set(c, p, {});
+        return c[p];
+    },
+
+    token: state => state.system.token,
+    version: state => state.system.version
 }
 export default getters

@@ -9,7 +9,13 @@ Router.prototype.push = function push(location, onResolve, onReject) {
 
 Vue.use(Router)
 
-import ConfigParams from '@/views/config-params/index'
+import BasicSetting from '@/views/basic-config/index'
+import MoreSetting from '@/views/more-config/index'
+import Login from '@/views/login/index'
+import Layout from '@/layout/index'
+
+import FileList from '@/views/file-list/index'
+import Dashboard from '@/views/dashboard/index'
 
 /**
  * constantRoutes
@@ -18,78 +24,45 @@ import ConfigParams from '@/views/config-params/index'
  */
 export const constantRoutes = [
     {
-        path: '/redirect/*',
-        component: ()=>import('@/views/redirect/index'),
-        hidden: true,
-    },
-    {
         path: '/login',
-        component: () => import('@/views/login/index'),
-        name:'Login',
+        component: Login,
+        name: 'Login',
         hidden: true
     },
     {
         path: '/',
-        component: () => import('@/layout/index'),
+        component: Layout,
         redirect: '/file:/',
         children: [
             {
                 path: '/file:*',
                 name: 'FileList',
-                component: () => import('@/views/file-list/index')
+                component: FileList
             },
+
             {
-                path: 'drive-add',
-                name: 'DriveAdd',
-                component: ConfigParams,
-                meta:{
-                    type:'add'
-                }
-            },
-            {
-                path: 'drive-edit',
-                name: 'DriveEdit',
-                component: ConfigParams,
-                meta:{
-                    type:'edit'
-                }
-            },
-            {
-                path: 'drive-config',
-                name: 'DriveConfig',
-                component: ConfigParams,
-                meta:{
-                    type:'config'
-                }
+                path: 'dashboard',
+                name: 'Dashboard',
+                component: Dashboard
             },
             {
                 path: 'setting',
-                name: 'SysSetting',
-                component: ConfigParams,
-                meta:{
-                    type: 'base'
-                }
+                redirect: {name: 'BasicSetting'}
             },
             {
-                path: 'pass-setting',
-                name: 'PassSetting',
-                component: () => import('@/views/update-pass/index'),
+                path: 'setting/basic',
+                name: 'BasicSetting',
+                component: BasicSetting
             },
             {
-                path: 'drive-list',
-                name: 'DriveList',
-                component: () => import('@/views/drive-list/index'),
-            },
-            {
-                path: 'dashboard',
-                component: () => import('@/views/dashboard/index'),
-                name: 'Dashboard'
+                path: 'setting/more',
+                name: 'MoreSetting',
+                component: MoreSetting,
             }
         ]
     },
     {
         path: '*',
-        component:() => import('@/views/empty'),
         redirect: '/'
     }
 ]

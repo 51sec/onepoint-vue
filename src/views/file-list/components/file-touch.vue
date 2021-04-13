@@ -1,48 +1,48 @@
 <template>
   <el-dialog
-      title="新建文本"
+      :title=path
       :visible.sync="touchData.visible"
-      width="80%">
-    <p>文件名</p>
-    <el-input
-        placeholder="请输入内容"
-        v-model="touchData.name">
-    </el-input>
-    <p>文件内容</p>
-    <el-input
-        type="textarea"
-        :rows="12"
-        placeholder="请输入内容"
-        v-model="touchData.content">
-    </el-input>
+      width="80%"
+      :fullscreen="fullscreen"
+  >
+    <div style="margin: -30px -10px;">
+      <el-input
+          placeholder="请输入文件名"
+          v-model="touchData.name"
+          v-show="!fullscreen"
+      >
+      </el-input>
+      <codemirror v-model="touchData.content" :options="touchDateCodeOptions" style="font-size: 25px;"></codemirror>
+    </div>
     <span slot="footer" class="dialog-footer">
-    <el-button @click="touchData.visible = false">取 消</el-button>
-    <el-button type="primary" @click="touch">确 定</el-button>
-  </span>
+      <el-button @click="fullscreen = !fullscreen" size="small">全 屏</el-button>
+      <el-button @click="touchData.visible = false" size="small">取 消</el-button>
+      <el-button type="primary" @click="$emit('touch')" size="small">确 定</el-button>
+    </span>
   </el-dialog>
 </template>
 <script>
-import fileAPI from "@/api/file-cmd";
+import {codemirror} from 'vue-codemirror-lite'
+import {mapGetters} from "vuex";
+
 export default {
-  data(){
-    return{
-      touchData:this.$store.getters.fileListTouch
+  components: {codemirror},
+  data() {
+    return {
+      fullscreen:false
     }
   },
-  methods:{
-    touch(){
-      const path = this.$store.getters.path;
-      this.$store.commit('fileList/CACHE_DIRTY',{path,dirty:-1});
-      const name = this.touchData.name;
-      console.log('touch '+name)
-      fileAPI.touch(path,name,this.touchData.content).then(()=>{
-        this.$store.commit('fileList/CACHE_DIRTY',{path,dirty:null});
-        this.$store.commit('fileList/CACHE_APPEND',{path,row:{type:0,name,time:Date.now(),size:null,mime:'?'}})
-        this.$notify.success('mkdir '+path+' '+name)
-      }).catch(()=>{
-        this.$store.commit('fileList/CACHE_DIRTY',{path,dirty:-2});
-      })
-      this.touchData.visible=false;
+  computed: {
+    ...mapGetters(['touchData', 'path']),
+    touchDateCodeOptions() {
+      return {
+        tabSize: 4,
+        styleActiveLine: true,
+        lineNumbers: true,
+        mode: {
+          filename: this.touchData.name
+        },
+      }
     }
   }
 }

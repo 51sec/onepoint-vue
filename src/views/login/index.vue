@@ -48,18 +48,6 @@
             prefix-icon="el-icon-setting"
         />
       </el-form-item>
-      <el-form-item v-show="showSetting" prop="PATH_ADMIN">
-        <el-input
-            ref="PATH_ADMIN"
-            v-model="loginForm.PATH_ADMIN"
-            placeholder="PATH_ADMIN"
-            name="PATH_ADMIN"
-            type="text"
-            tabindex="4"
-            autocomplete="on"
-            prefix-icon="el-icon-setting"
-        />
-      </el-form-item>
       <el-form-item v-show="showSetting" prop="PATH_API">
         <el-input
             ref="PATH_API"
@@ -81,8 +69,6 @@
 
 <script>
 
-import {login} from "@/api/user";
-
 export default {
   name: 'Login',
   created() {
@@ -90,12 +76,10 @@ export default {
     if (s.get('base_url')) {
       if (s.get('base_url')) this.loginForm.baseURL = s.get('base_url');
       if (s.get('path_api')) this.loginForm.baseURL = s.get('path_api');
-      if (s.get('path_admin')) this.loginForm.baseURL = s.get('path_admin');
     }
     if (window.opConfig) {
       this.loginForm.baseURL = window.opConfig.baseURL;
       this.loginForm.PATH_API = window.opConfig.PATH_API;
-      this.loginForm.PATH_ADMIN = window.opConfig.PATH_ADMIN;
     }
   },
   data() {
@@ -157,10 +141,12 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          const {username, password, baseURL, PATH_API, PATH_ADMIN} = this.loginForm;
-          this.$store.commit('system/SET_BASE', {baseURL, PATH_API, PATH_ADMIN});
-          login({username: username.trim(), password: password.trim()}).then(data => {
-            this.$store.commit('system/SET_STATE', data);
+          const {username, password, baseURL, PATH_API} = this.loginForm;
+          this.$store.commit('system/SET_BASE', {baseURL, PATH_API});
+          this.$op.login(username.trim(), password.trim()).then(data => {
+            const {token, version} = data;
+            this.$store.commit('system/SET_TOKEN', token);
+            this.$store.commit('system/SET_VERSION', version);
             this.$router.push({path: this.$route.query.redirect || '/'})
             this.loading = false
           }).catch(() => {

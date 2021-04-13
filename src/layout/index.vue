@@ -1,85 +1,88 @@
 <template>
   <div>
-    <el-row>
-      <el-col :span="20" :offset="2">
-        <div style="padding: 15px 0;position: relative;border-bottom: solid 1px #e6e6e6;">
-          <a target="_blank" href="https://github.com/ukuq/onepoint">
-            <img :src="favicon" alt="logo" style="width: 32px;height: 32px">
-          </a>
-          <el-menu :class="menuClass" :mode="menuMode" :router="true">
-            <el-menu-item index="/">文件管理</el-menu-item>
-            <el-submenu index="2">
-              <template slot="title">云盘管理</template>
-              <el-menu-item index="/drive-add">新增云盘</el-menu-item>
-              <el-menu-item index="/drive-list">云盘信息</el-menu-item>
-            </el-submenu>
-            <el-submenu index="3">
-              <template slot="title">系统设置</template>
-              <el-menu-item index="/setting">基本设置</el-menu-item>
-              <el-menu-item index="/pass-setting">密码设置</el-menu-item>
-            </el-submenu>
-            <el-menu-item index="/dashboard">运行状态</el-menu-item>
-          </el-menu>
-          <el-dropdown class="avatar-container right-menu-item hover-effect" style="float: right">
-            <span><svg-icon icon-class="account-circle" style="width: 28px;height: 28px;"></svg-icon></span>
-            <el-dropdown-menu slot="dropdown">
-              <router-link to="/">
-                <el-dropdown-item>Home</el-dropdown-item>
-              </router-link>
-              <router-link :to="{name:'Dashboard'}">
-                <el-dropdown-item>Dashboard</el-dropdown-item>
-              </router-link>
-              <a target="_blank" href="http://github.com/ukuq/onepoint-vue">
-                <el-dropdown-item>Github</el-dropdown-item>
-              </a>
-              <el-dropdown-item>
-                <span>v210127</span>
-              </el-dropdown-item>
-              <el-dropdown-item divided @click.native="logout">
-                <span style="display:block;">Log Out</span>
-              </el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
+    <div class="container" style="border-bottom: 1px solid #dcdfe6;">
+      <div class="d-inline-block op-header-logo">
+        <a target="_blank" :href="baseURL">
+          <img :src="favicon" alt="logo" style="height: 32px;transform: translateY(10px);">
+        </a>
+      </div>
+      <ul class="d-inline-block op-header-nav">
+        <li>
+          <router-link :to="{name:'FileList',params:{pathMatch:'/'}}"><i class="el-icon-s-home"></i>
+            <span>文件管理</span>
+          </router-link>
+        </li>
+        <li>
+          <router-link :to="{name:'BasicSetting'}"><i class="el-icon-s-tools"></i>
+            <span>基本设置</span>
+          </router-link>
+        </li>
+        <li>
+          <router-link :to="{name:'MoreSetting'}"><i class="el-icon-more"></i>
+            <span>更多设置</span>
+          </router-link>
+        </li>
+        <li>
+          <router-link :to="{name:'Dashboard'}"><i class="el-icon-info"></i>
+            <span>运行状态</span>
+          </router-link>
+        </li>
+      </ul>
+      <el-dropdown style="float: right;transform:translateY(15px)" class="d-inline-block">
+        <div>
+          <svg-icon icon-class="account-circle" style="width: 28px;height: 28px;"></svg-icon>
         </div>
-      </el-col>
-    </el-row>
-    <el-row>
-      <el-col :span="20" :offset="2">
-        <router-view class="mt-3" :key="$route.path"/>
-      </el-col>
-    </el-row>
-    <div style="position:fixed;left:0;bottom: 0;z-index: 2017" class="ml-3 mb-5 op-s-icon d-md-none" @click="showMenu">
-      <svg-icon :icon-class="menuShow?'chevron-left':'chevron-right'"></svg-icon>
+        <el-dropdown-menu slot="dropdown" class="header-right">
+          <el-dropdown-item @click.native="$op.open('http://github.com/ukuq/onepoint')"><span>Github</span>
+          </el-dropdown-item>
+          <el-dropdown-item divided @click.native="logout">
+            <span style="display:block;">Log Out</span>
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+    </div>
+    <div class="container">
+      <router-view class="mt-3 pb-3" :key="$route.path"/>
+    </div>
+    <div v-show="mode.footer" style="text-align: center;margin-top: -1rem;" class="py-1">Just One Point!<span
+        v-if="publicData.version"> & Version: {{ publicData.version }}</span>
     </div>
   </div>
 </template>
 
 <script>
 
+import {mapGetters} from "vuex";
+import marked from "marked";
+
 export default {
+  created() {
+    this.$op.site().then(data => {
+      const {drives, site, tips, version} = data;
+      drives.sort((a, b) => b.path.localeCompare(a.path));
+      drives.forEach(e => e.readme = marked(e.readme));
+      site.readme = marked(site.readme);
+      this.publicData.drives = drives;
+      this.publicData.site = site;
+      document.title = site.name;
+      this.publicData.tips = tips || []
+      this.publicData.version = version || 0
+    })
+  },
   data() {
-    return {
-      menuMode: 'horizontal',
-      menuShow: false,
-    }
+    return {}
   },
   computed: {
-    menuClass() {
-      if (this.menuMode) return "d-md-block d-none op-m-menu-h";
-      return this.menuShow ? "op-m-menu-v" : "op-m-menu-v d-none";
-    },
+    ...mapGetters(['mode', 'publicData', 'baseURL']),
     favicon() {
-      return this.$store.state.system.baseURL + '/favicon.ico'
+      return this.baseURL + '/favicon.ico'
     }
   },
   methods: {
-    showMenu() {
-      if (this.menuMode) this.menuMode = '';
-      this.menuShow = !this.menuShow;
-    },
-    async logout() {
-      this.$store.commit('system/SET_STATE', {token: ''})
-      return this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    logout() {
+      this.$confirm("退出登录", "", {type: "warning"}).then(() => {
+        this.$store.dispatch('system/logout');
+      })
     }
   }
 }
@@ -100,20 +103,52 @@ export default {
   z-index: 5;
 }
 
-.op-m-menu-h {
-  position: absolute;
-  top: 0;
-  left: 32px;
-  border-bottom: none !important;
+.op-header-logo {
+  margin: 0;
+  padding: 0 10px;
 }
 
-.op-m-menu-v {
-  position: fixed;
-  top: 0;
-  left: 0;
-  border-bottom: none;
-  z-index: 2017;
-  width: 200px;
-  height: 100%;
+ul.op-header-nav {
+  height: 60px;
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+
+ul.op-header-nav li {
+  display: inline-block;
+  line-height: 60px;
+  margin-right: 10px;
+}
+
+ul.op-header-nav a {
+  color: #909399;
+  text-decoration: none;
+}
+
+ul.op-header-nav a:hover {
+  color: black;
+}
+
+ul.op-header-nav a.router-link-active.router-link-exact-active {
+  color: #1890ff;
+}
+
+ul.op-header-nav li span {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  ul.op-header-nav li span {
+    display: unset;
+  }
+
+  ul.op-header-nav li {
+    margin-right: 40px;
+  }
+
+  .op-header-logo {
+    padding: 0 40px;
+  }
 }
 </style>
