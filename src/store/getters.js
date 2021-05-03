@@ -44,6 +44,7 @@ const getters = {
     },
 
     token: state => state.system.token,
-    version: state => state.system.version
+    version: state => state.system.version,
+    version0: state => state.system.version0,
 }
 export default getters

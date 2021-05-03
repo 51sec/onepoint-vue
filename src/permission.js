@@ -8,6 +8,16 @@ NProgress.configure({showSpinner: false}) // NProgress Configuration
 const whiteList = ['/login', '/auth-redirect'] // no redirect whitelist
 
 router.beforeEach(async (to, from, next) => {
+    if (store.getters.version0 === 1) {
+        if (to.name !== 'BasicSetting') {
+            next({name: 'BasicSetting'});
+        } else {
+            next();
+        }
+        return;
+    }
+
+
     // start progress bar
     NProgress.start()
 
@@ -19,10 +29,7 @@ router.beforeEach(async (to, from, next) => {
 
     if (hasToken) {
         console.log(to)
-        if (to.name !== 'BasicSetting' && store.getters.version === 1) {
-            next({name: 'BasicSetting'})
-            NProgress.done()
-        } else if (to.path === '/login') {
+        if (to.path === '/login') {
             // if is logged in, redirect to the home page
             next({path: '/'})
             NProgress.done() // hack: https://github.com/PanJiaChen/vue-element-admin/pull/2939

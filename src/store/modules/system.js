@@ -6,8 +6,9 @@ import Vue from "vue";
 const m = JSON.parse(getItem('MODE_PREFER') || '{}');
 
 const state = {
-    token: getItem('ADMIN_TOKEN'),
+    token: new Date(getItem('ADMIN_ETIME')) > Date.now() ? getItem('ADMIN_TOKEN') : '',
     version: Number(getItem('CONFIG_VERSION')),
+    version0: window.opConfigVersion || this.version,
     baseURL: getItem('BASE_URL'),
     PATH_API: getItem('PATH_API') || '/api/',
     mode: Object.assign({
@@ -29,6 +30,7 @@ const mutations = {
     SET_TOKEN: (state, token = '') => {
         state.token = token
         setItem('ADMIN_TOKEN', token)
+        setItem('ADMIN_ETIME', new Date(Date.now() + 3600 * 1000 * 3).toISOString())
     },
     SET_BASE: (state, {baseURL, PATH_API}) => {
         state.baseURL = baseURL

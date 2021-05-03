@@ -17,7 +17,7 @@ request.interceptors.request.use(
     }
 )
 request.interceptors.response.use(
-    response => {
+    async response => {
         if (response.status >= 400) {
             const res = response.data;
             const err = new Error(res.message || res.error || 'Error');
@@ -32,7 +32,7 @@ request.interceptors.response.use(
                 type: 'error'
             });
             if (res.error === 'UnauthorizedToken') {
-                return store.dispatch('system/logout');
+                await store.dispatch('system/logout');
             }
             return Promise.reject(err);
         }

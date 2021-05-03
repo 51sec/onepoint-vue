@@ -57,7 +57,7 @@ import marked from "marked";
 
 export default {
   created() {
-    this.$op.site().then(data => {
+    if (this.version0 !== 1) this.$op.site().then(data => {
       const {drives, site, tips, version} = data;
       drives.sort((a, b) => b.path.localeCompare(a.path));
       drives.forEach(e => e.readme = marked(e.readme));
@@ -73,7 +73,7 @@ export default {
     return {}
   },
   computed: {
-    ...mapGetters(['mode', 'publicData', 'baseURL']),
+    ...mapGetters(['mode', 'publicData', 'baseURL', 'version0']),
     favicon() {
       return this.baseURL + '/favicon.ico'
     }
